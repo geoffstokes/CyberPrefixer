@@ -72,15 +72,8 @@ def get():
             if not tact(headline):
                 continue
 
-            # Remove attribution string
-            if "-" in headline:
-                headline = headline.split("-")[:-1]
-                headline = ' '.join(headline).strip()
-
             if process(headline):
                 break
-            else:
-                continue
 
 def process(headline):
     headline = hparser.unescape(headline).strip()
@@ -90,15 +83,11 @@ def process(headline):
         if is_replaceable(word) and not is_replaceable(tagged[i-1]):
             headline = headline.replace(" " + word[0], " cyber" + word[0], 1)
 
-    # Don't tweet anything that's too long
-    if len(headline) > 140:
+    # Don't tweet anything that's too long or hasn't been replaced
+    if "cyber" not in headline or len(headline) > 140:
         return False
 
-    # Don't tweet anything where a replacement hasn't been made
-    if "cyber" not in headline:
-        return False
-    else:
-        return tweet(headline)
+    return tweet(headline)
 
 def tweet(headline):
     auth = tweepy.OAuthHandler(C_KEY, C_SECRET)
@@ -123,10 +112,7 @@ def tweet(headline):
 
 def tact(headline):
     # Avoid producing particularly tactless tweets
-    if re.search(offensive, headline) is None:
-        return True
-    else:
-        return False
+    return re.search(offensive, headline) is None
 
 def count_caps(headline):
     count = 0
@@ -137,11 +123,11 @@ def count_caps(headline):
 
 def is_replaceable(word):
     # Prefix any noun (singular or plural) that begins with a lowercase letter
-    if (word[1] == 'NN' or word[1] == 'NNS') and word[0][0].isalpha \
-        and word[0][0].islower() and len(word[0]) > 1:
-        return True
-    else:
-        return False
+	# and is longer than one character
+    return (word[1] == 'NN' or word[1] == 'NNS') and \
+	       word[0][0].isalpha and \
+           word[0][0].islower() and \
+		   len(word[0]) > 1
 
 if __name__ == "__main__":
     get()
