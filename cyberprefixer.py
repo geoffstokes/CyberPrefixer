@@ -48,8 +48,7 @@ offensive = re.compile(r"\b(deaths?|dead(ly)?|die(s|d)?|hurts?|"
 
 def get():
     try:
-        request = urllib2.Request(
-            "http://news.google.com/news?pz=1&cf=all&ned=us&hl=en&output=rss")
+        request = urllib2.Request(F_URL)
         response = urllib2.urlopen(request)
     except urllib2.URLError as e:
         print e.reason
@@ -104,7 +103,7 @@ def tweet(headline):
     auth = tweepy.OAuthHandler(C_KEY, C_SECRET)
     auth.set_access_token(A_TOKEN, A_TOKEN_SECRET)
     api = tweepy.API(auth)
-    tweets = api.user_timeline('CyberPrefixer')
+    tweets = api.user_timeline(T_USERNAME, count=200)
 
     # Check that we haven't tweeted this before
     for tweet in tweets:
