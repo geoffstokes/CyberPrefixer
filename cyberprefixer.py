@@ -95,8 +95,11 @@ def tweet(headline):
     api = tweepy.API(auth)
     tweets = api.user_timeline(T_USERNAME, count=200)
 
+    print "Attempting to tweet \"%s\"..." % headline
+
     # Check that we haven't tweeted this before
     for tweet in tweets:
+        print "* Found tweet \"%s\"..." % tweet.text
         if headline == tweet.text:
             return False
 
